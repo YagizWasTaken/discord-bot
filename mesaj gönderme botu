@@ -1,0 +1,52 @@
+from discord.ext import commands
+import discord
+import asyncio
+
+BOT_TOKEN = ""
+CHANNEL_ID = 
+
+bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
+timeout_dict = {}
+
+
+async def check_timeout(user_id):
+  if user_id in timeout_dict:
+    if datetime.now() < timeout_dict[user_id]:
+      return True
+    else:
+      del timeout_dict[user_id]
+      return False
+  else:
+    return False
+
+
+
+@bot.event
+async def on_ready():
+    print("BOT aktif. Powered by www.yagizarslan.net")
+    channel = bot.get_channel(CHANNEL_ID)
+    await channel.send("BOT aktif. Powered by https://www.yagizarslan.net")
+
+    async def mesaj_gonderme():
+        beklemesuresi = input("İki kullanıcıya mesaj atma arası bekleme süresi ne kadar olsun?  :")
+        with open("metin_dosyasi.txt", "r", encoding="utf-8") as file:
+            paragraph = file.read()
+
+        for guild in bot.guilds:
+            for member in guild.members:
+                if member != bot.user:
+                    try:
+                        await asyncio.sleep(int(beklemesuresi))
+                        await member.send(paragraph)
+                        print(f"Paragraf gönderildi: {member.name} ({member.id})")
+                    except discord.errors.HTTPException:
+                        await asyncio.sleep(1)
+                        print(f"Hata: Mesaj gönderilemedi - {member.name} ({member.id})")
+                        continue
+
+    soru = input("Mesaj göndermek istiyor musunuz? evet/hayır? : ")
+    if soru.lower() == "evet":  # Küçük harfe dönüştürülen "evet" kontrol ediliyor
+        await mesaj_gonderme()
+    else:
+        return
